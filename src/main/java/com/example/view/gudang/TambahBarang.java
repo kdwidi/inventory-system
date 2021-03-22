@@ -5,6 +5,7 @@
  */
 package com.example.view.gudang;
 
+import java.rmi.RemoteException;
 /**
  *
  * @author riel
@@ -42,7 +43,21 @@ public class TambahBarang extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+     private void btn_tambahActionPerformed(java.awt.event.ActionEvent evt) {                                           
+         //String id=txt_Id.getText();
+         //String Nama=txt_nama.getText();
+        //InventoryImplementasi imp=(InventoryImplementasi) Naming.lookup("rmi://127.0.0.1:5000/inventory");
+        try{
+           
+            TambahBarang tambah=new TambahBarang();
+            tambah.setAllBarang(txt_Id.getText());
+            tambah.setAllbarang(txt_nama.getText())
+                    
+        }catch(RemoteException e){
+            System.out.println("Data berhasil Ditambah" + e.getMessage());
+        }
+            
+    }        
     /**
      * @param args the command line arguments
      */
