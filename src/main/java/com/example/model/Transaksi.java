@@ -13,67 +13,36 @@ import java.util.Date;
  * @author riel
  */
 public class Transaksi implements Serializable {
-    private String id;
-    private String idGudang;
-    private String idBarang;
-    private int jumlah;
-    private String keterangan;
-    private Date tanggal;
-    private String idPetugas;
+    private final String id;
+    private final String idBarang;
+    private final int jumlah;
+    private final String tanggal;
+    private final String idPetugas;
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public Transaksi(String id, String idBarang, int jumlah, String tanggal, String idPetugas) {
         this.id = id;
-    }
-
-    public String getIdGudang() {
-        return idGudang;
-    }
-
-    public void setIdGudang(String idGudang) {
-        this.idGudang = idGudang;
+        this.idBarang = idBarang;
+        this.jumlah = jumlah;
+        this.tanggal = tanggal;
+        this.idPetugas = idPetugas;
     }
 
     public String getIdBarang() {
         return idBarang;
     }
 
-    public void setIdBarang(String idBarang) {
-        this.idBarang = idBarang;
-    }
-
     public int getJumlah() {
         return jumlah;
     }
 
-    public void setJumlah(int jumlah) {
-        this.jumlah = jumlah;
-    }
-
-    public String getKeterangan() {
-        return keterangan;
-    }
-
-    public void setKeterangan(String keterangan) {
-        this.keterangan = keterangan;
-    }
-
-    public Date getTanggal() {
+    public String getTanggal() {
         return tanggal;
     }
-
-    public void setTanggal(Date tanggal) {
-        this.tanggal = tanggal;
-    }
-    
     public String getIdPetugas() {
         return idPetugas;
-    }
-
-    public void setIdPetugas(String idPetugas) {
-        this.idPetugas = idPetugas;
     }
 }

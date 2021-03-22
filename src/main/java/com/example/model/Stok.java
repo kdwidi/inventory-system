@@ -11,15 +11,16 @@ import java.io.Serializable;
  *
  * @author riel
  */
-public class Petugas implements Serializable{
+public class Stok implements Serializable{
+    
     private final String id;
     private final String nama;
-    private final String gudang;
-    
-    public Petugas(String id, String nama, String gudang) {
+    private final int jumlah;
+
+    public Stok(String id, String nama, int jumlah) {
         this.id = id;
         this.nama = nama;
-        this.gudang = gudang;
+        this.jumlah = jumlah;
     }
 
     public String getId() {
@@ -30,7 +31,7 @@ public class Petugas implements Serializable{
         return nama;
     }
 
-    public String getGudang() {
-        return gudang;
+    public int getJumlah() {
+        return jumlah;
     }
 }

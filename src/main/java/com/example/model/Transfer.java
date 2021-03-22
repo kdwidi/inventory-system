@@ -12,40 +12,50 @@ import java.io.Serializable;
  * @author riel
  */
 public class Transfer implements Serializable {
-    private String idTfAsal;
-    private String idGudangAsal;
-    private String status;
 
-    public String getIdTfAsal() {
-        return idTfAsal;
+    private final String id;
+    private final String barang;
+    private final int jumlah;
+    private final String tanggal;
+    private final String petugas;
+    private final String status;
+    private final String transaksiTujuan;
+
+    public Transfer(String id, String barang, int jumlah, String tanggal, String petugas, String status, String transaksiTujuan) {
+        this.id = id;
+        this.barang = barang;
+        this.jumlah = jumlah;
+        this.tanggal = tanggal;
+        this.petugas = petugas;
+        this.status = status;
+        this.transaksiTujuan = transaksiTujuan;
+    }
+    
+    public String getId() {
+        return id;
     }
 
-    public void setIdTfAsal(String idTfAsal) {
-        this.idTfAsal = idTfAsal;
+    public String getBarang() {
+        return barang;
     }
 
-    public String getIdGudangAsal() {
-        return idGudangAsal;
+    public int getJumlah() {
+        return jumlah;
     }
 
-    public void setIdGudangAsal(String idGudangAsal) {
-        this.idGudangAsal = idGudangAsal;
+    public String getTanggal() {
+        return tanggal;
+    }
+
+    public String getPetugas() {
+        return petugas;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public String getTransaksiTujuan() {
+        return transaksiTujuan;
     }
-
-    public String getIdTfTujuan() {
-        return idTfTujuan;
-    }
-
-    public void setIdTfTujuan(String idTfTujuan) {
-        this.idTfTujuan = idTfTujuan;
-    }
-    private String idTfTujuan;
 }
