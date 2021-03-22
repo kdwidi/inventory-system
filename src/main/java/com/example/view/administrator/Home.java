@@ -5,17 +5,75 @@
  */
 package com.example.view.administrator;
 
+import com.example.interfaces.Inventory;
+import com.example.model.Gudang;
+import com.example.model.Petugas;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author riel
  */
 public class Home extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Home
-     */
-    public Home() {
+    private Inventory remote = null;
+    private ArrayList<Gudang> listGudang = null;
+    private ArrayList<Petugas> listPetugas = null;
+
+    public Home() throws RemoteException, NotBoundException {
         initComponents();
+        Registry registry = LocateRegistry.getRegistry(5000);
+        remote = (Inventory) registry
+                .lookup("inventory");
+        loadAllTableData();
+    }
+
+    private void loadAllTableData() throws RemoteException {
+        listGudang = remote.getAllGudang();
+        listPetugas = remote.getAllPetugas();
+        loadGudang();
+        loadPetugas();
+    }
+
+    private void loadGudang() {
+        DefaultTableModel model = (DefaultTableModel) tabelGudang.getModel();
+        model.setRowCount(0);
+        if (listGudang != null) {
+            listGudang.forEach((Gudang g) -> {
+                Object o[] = {
+                    g.getId(),
+                    g.getNama(),
+                    g.getAlamat()
+                };
+                model.addRow(o);
+            });
+        }
+    }
+
+    private void loadPetugas() {
+        DefaultTableModel model = (DefaultTableModel) tabelPetugas.getModel();
+        model.setRowCount(0);
+        if (listPetugas != null) {
+            listPetugas.forEach((Petugas p) -> {
+                Object o[] = {
+                    p.getId(),
+                    p.getNama(),
+                    p.getPassword(),
+                    p.getStatus(),
+                    p.getGudang()
+                };
+                model.addRow(o);
+            });
+        }
     }
 
     /**
@@ -28,17 +86,145 @@ public class Home extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tabelGudang = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        cariGudangField = new javax.swing.JTextField();
+        cariGudangBtn = new javax.swing.JButton();
+        tambahGudangBtn = new javax.swing.JButton();
+        editGudangBtn = new javax.swing.JButton();
+        resetCariGudang = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        cariPetugasField = new javax.swing.JTextField();
+        cariPetugasBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelPetugas = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        editPetugasBtn = new javax.swing.JButton();
+        tambahPetugasBtn = new javax.swing.JButton();
+        resetCariPetugasBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        jLabel1.setText("Manajemen Sistem Gudang");
+
+        tabelGudang.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Id", "Nama", "Alamat"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(tabelGudang);
+
+        jLabel3.setText("Nama");
+
+        cariGudangField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cariGudangFieldActionPerformed(evt);
+            }
+        });
+
+        cariGudangBtn.setText("Cari");
+        cariGudangBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cariGudangBtnActionPerformed(evt);
+            }
+        });
+
+        tambahGudangBtn.setText("Tambah");
+        tambahGudangBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tambahGudangBtnActionPerformed(evt);
+            }
+        });
+
+        editGudangBtn.setText("Edit");
+        editGudangBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editGudangBtnActionPerformed(evt);
+            }
+        });
+
+        resetCariGudang.setText("Reset");
+        resetCariGudang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetCariGudangActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 983, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(editGudangBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tambahGudangBtn))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cariGudangField, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cariGudangBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(resetCariGudang)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cariGudangBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(resetCariGudang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cariGudangField)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editGudangBtn)
+                    .addComponent(tambahGudangBtn))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Gudang", jPanel2);
+
+        jLabel2.setText("Nama");
+
+        cariPetugasField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cariPetugasFieldActionPerformed(evt);
+            }
+        });
+
+        cariPetugasBtn.setText("Cari");
+        cariPetugasBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cariPetugasBtnActionPerformed(evt);
+            }
+        });
 
         tabelPetugas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -48,25 +234,77 @@ public class Home extends javax.swing.JFrame {
             new String [] {
                 "Id", "Nama", "Password", "Status", "Gudang"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(tabelPetugas);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel1.setText("Manajemen Petugas");
-
-        jButton1.setText("Cari");
-
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        editPetugasBtn.setText("Edit");
+        editPetugasBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                editPetugasBtnActionPerformed(evt);
             }
         });
 
-        jLabel2.setText("Id Petugas");
+        tambahPetugasBtn.setText("Tambah");
 
-        jButton2.setText("Edit");
+        resetCariPetugasBtn.setText("Reset");
+        resetCariPetugasBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetCariPetugasBtnActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("Tambah");
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 983, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(editPetugasBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tambahPetugasBtn))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cariPetugasField, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cariPetugasBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(resetCariPetugasBtn)))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cariPetugasBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(resetCariPetugasBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cariPetugasField)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editPetugasBtn)
+                    .addComponent(tambahPetugasBtn))
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Petugas", jPanel3);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -74,46 +312,23 @@ public class Home extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jSeparator1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton1))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton3)))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addContainerGap(20, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField1)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -124,15 +339,86 @@ public class Home extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void cariPetugasFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariPetugasFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_cariPetugasFieldActionPerformed
+
+    private void cariGudangFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariGudangFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cariGudangFieldActionPerformed
+
+    private void tambahGudangBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahGudangBtnActionPerformed
+        new TambahGudang(remote).setVisible(true);
+    }//GEN-LAST:event_tambahGudangBtnActionPerformed
+
+    private void cariGudangBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariGudangBtnActionPerformed
+        if (listGudang != null) {
+            DefaultTableModel model = (DefaultTableModel) tabelGudang.getModel();
+            model.setRowCount(0);
+            listGudang.forEach((Gudang g) -> {
+                if (g.getNama().toLowerCase().contains(cariGudangField.getText().toLowerCase())) {
+                    Object o[] = {
+                        g.getId(),
+                        g.getNama(),
+                        g.getAlamat()
+                    };
+                    model.addRow(o);
+                }
+            });
+        }
+    }//GEN-LAST:event_cariGudangBtnActionPerformed
+
+    private void resetCariGudangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetCariGudangActionPerformed
+        cariGudangField.setText("");
+        loadGudang();
+
+    }//GEN-LAST:event_resetCariGudangActionPerformed
+
+    private void editGudangBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editGudangBtnActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tabelGudang.getModel();
+        Vector data = (Vector) model.getDataVector().elementAt(tabelGudang.getSelectedRow());
+        new EditGudang(remote, data).setVisible(true);
+    }//GEN-LAST:event_editGudangBtnActionPerformed
+
+    private void cariPetugasBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariPetugasBtnActionPerformed
+        if (listPetugas != null) {
+            DefaultTableModel model = (DefaultTableModel) tabelPetugas.getModel();
+            model.setRowCount(0);
+            listPetugas.forEach((Petugas p) -> {
+                if (p.getNama().toLowerCase().contains(cariPetugasField.getText().toLowerCase())) {
+                    Object o[] = {
+                        p.getId(),
+                        p.getNama(),
+                        p.getPassword(),
+                        p.getStatus(),
+                        p.getGudang()
+                    };
+                    model.addRow(o);
+                }
+            });
+        }
+    }//GEN-LAST:event_cariPetugasBtnActionPerformed
+
+    private void resetCariPetugasBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetCariPetugasBtnActionPerformed
+        cariPetugasField.setText("");
+        loadPetugas();
+    }//GEN-LAST:event_resetCariPetugasBtnActionPerformed
+
+    private void editPetugasBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPetugasBtnActionPerformed
+        if (tabelPetugas.getSelectedRow() >= 0) {
+            DefaultTableModel model = (DefaultTableModel) tabelPetugas.getModel();
+            Vector petugas = (Vector) model.getDataVector().elementAt(tabelPetugas.getSelectedRow());
+            new EditPetugas(remote, petugas, listGudang).setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "Harap pilih petugas pada tabel.");
+        }
+    }//GEN-LAST:event_editPetugasBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -164,21 +450,37 @@ public class Home extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Home().setVisible(true);
+                try {
+                    new Home().setVisible(true);
+                } catch (RemoteException | NotBoundException ex) {
+                    Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton cariGudangBtn;
+    private javax.swing.JTextField cariGudangField;
+    private javax.swing.JButton cariPetugasBtn;
+    private javax.swing.JTextField cariPetugasField;
+    private javax.swing.JButton editGudangBtn;
+    private javax.swing.JButton editPetugasBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JButton resetCariGudang;
+    private javax.swing.JButton resetCariPetugasBtn;
+    private javax.swing.JTable tabelGudang;
     private javax.swing.JTable tabelPetugas;
+    private javax.swing.JButton tambahGudangBtn;
+    private javax.swing.JButton tambahPetugasBtn;
     // End of variables declaration//GEN-END:variables
 }

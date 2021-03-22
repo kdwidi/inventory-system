@@ -14,11 +14,15 @@ import java.io.Serializable;
 public class Petugas implements Serializable{
     private final String id;
     private final String nama;
+    private final String password;
+    private final String status;
     private final String gudang;
     
-    public Petugas(String id, String nama, String gudang) {
+    public Petugas(String id, String nama, String password, String status, String gudang) {
         this.id = id;
         this.nama = nama;
+        this.password = password;
+        this.status = status;
         this.gudang = gudang;
     }
 
@@ -28,6 +32,14 @@ public class Petugas implements Serializable{
 
     public String getNama() {
         return nama;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public String getGudang() {

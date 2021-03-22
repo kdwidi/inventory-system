@@ -48,33 +48,15 @@ public class InventoryImplementasi implements Inventory {
                 petugas = new Petugas(
                         rs.getString("id"),
                         rs.getString("nama"),
+                        null,
+                        null,
                         rs.getString("gudang")
                 );
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         return petugas;
-    }
-
-    @Override
-    public ArrayList<Gudang> getAllGudang() throws RemoteException {
-        ArrayList<Gudang> listGudang = new ArrayList<>();
-        String query = "SELECT * FROM gudang";
-        try {
-            PreparedStatement ps = this.connection.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Gudang gudang = new Gudang();
-                gudang.setId(rs.getString("id"));
-                gudang.setNama(rs.getString("nama"));
-                gudang.setAlamat(rs.getString("alamat"));
-                listGudang.add(gudang);
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return listGudang;
     }
 
     @Override
@@ -84,13 +66,14 @@ public class InventoryImplementasi implements Inventory {
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM gudang where id = '" + id + "'");
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                gudang = new Gudang();
-                gudang.setId(rs.getString("id"));
-                gudang.setNama(rs.getString("nama"));
-                gudang.setAlamat(rs.getString("alamat"));
+                gudang = new Gudang(
+                        rs.getString("id"),
+                        rs.getString("nama"),
+                        rs.getString("alamat")
+                );
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         return gudang;
     }
@@ -115,35 +98,7 @@ public class InventoryImplementasi implements Inventory {
                 listStok.add(stok);
             }
         } catch (NumberFormatException e) {
-            System.out.println(e);
-        } catch (SQLException ex) {
-            Logger.getLogger(InventoryImplementasi.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listStok;
-    }
-
-    @Override
-    public ArrayList<Stok> searchStokGudang(String idGudang, String search) throws RemoteException {
-        ArrayList<Stok> listStok = null;
-        String query = "SELECT barang,sum(jumlah) AS jumlah,nama FROM transaksi INNER JOIN barang ON transaksi.barang = barang.id WHERE transaksi.id LIKE ? AND nama LIKE ? GROUP BY transaksi.barang";
-        try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1, "%" + idGudang);
-            ps.setString(2, "%" +search+"%");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                if (listStok == null) {
-                    listStok = new ArrayList<>();
-                }
-                Stok stok = new Stok(
-                        rs.getString("barang"),
-                        rs.getString("nama"),
-                        Integer.parseInt(rs.getString("jumlah"))
-                );
-                listStok.add(stok);
-            }
-        } catch (NumberFormatException e) {
-            System.out.println(e);
+            System.err.println(e);
         } catch (SQLException ex) {
             Logger.getLogger(InventoryImplementasi.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -172,7 +127,7 @@ public class InventoryImplementasi implements Inventory {
                 listTransaksi.add(transaksi);
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         return listTransaksi;
     }
@@ -198,7 +153,7 @@ public class InventoryImplementasi implements Inventory {
                 listTransaksi.add(transaksi);
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         return listTransaksi;
     }
@@ -221,31 +176,7 @@ public class InventoryImplementasi implements Inventory {
                 listBarang.add(barang);
             }
         } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return listBarang;
-    }
-
-    @Override
-    public ArrayList<Barang> searchBarangName(String search) throws RemoteException {
-        ArrayList<Barang> listBarang = null;
-        String query = "SELECT * FROM barang WHERE nama LIKE ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1, "%" + search + "%");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                if (listBarang == null) {
-                    listBarang = new ArrayList<>();
-                }
-                Barang barang = new Barang(
-                        rs.getString("id"),
-                        rs.getString("nama")
-                );
-                listBarang.add(barang);
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         return listBarang;
     }
@@ -253,7 +184,7 @@ public class InventoryImplementasi implements Inventory {
     @Override
     public ArrayList<Transfer> getTransferGudang(String idGudang) throws RemoteException {
         ArrayList<Transfer> listTransfers = null;
-        String query = "select id,barang,jumlah,tanggal,petugas,status,transaksi_tujuan from transaksi inner join transfer on id=transaksi_asal where gudang_tujuan like ?";
+        String query = "SELECT id,barang,jumlah,tanggal,petugas,status,transaksi_tujuan FROM transaksi INNER JOIN transfer ON id=transaksi_asal WHERE gudang_tujuan LIKE ?";
         try {
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, "%" + idGudang + "%");
@@ -273,9 +204,91 @@ public class InventoryImplementasi implements Inventory {
                 );
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         return listTransfers;
     }
 
+    /*
+        Administrator field
+     */
+    @Override
+    public ArrayList<Gudang> getAllGudang() throws RemoteException {
+        ArrayList<Gudang> listGudang = null;
+        String query = "SELECT * FROM gudang";
+        try {
+            PreparedStatement ps = this.connection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                if (listGudang == null) {
+                    listGudang = new ArrayList<>();
+                }
+                Gudang gudang = new Gudang(
+                        rs.getString("id"),
+                        rs.getString("nama"),
+                        rs.getString("alamat")
+                );
+                listGudang.add(gudang);
+            }
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+        return listGudang;
+    }
+
+    @Override
+    public int updateGudang(Gudang g) throws RemoteException {
+        String query = "UPDATE gudang set nama=?, alamat=? where id=?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, g.getNama());
+            ps.setString(2, g.getAlamat());
+            ps.setString(3, g.getId());
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+        return -1;
+    }
+
+    @Override
+    public ArrayList<Petugas> getAllPetugas() throws RemoteException {
+        ArrayList<Petugas> listPetugas = null;
+        String query = "SELECT * FROM petugas";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                if (listPetugas == null) {
+                    listPetugas = new ArrayList<>();
+                }
+                Petugas petugas = new Petugas(
+                        rs.getString("id"),
+                        rs.getString("nama"),
+                        rs.getString("password"),
+                        rs.getString("status"),
+                        rs.getString("gudang")
+                );
+                listPetugas.add(petugas);
+            }
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+        return listPetugas;
+    }
+
+    @Override
+    public int insertGudang(Gudang g) throws RemoteException {
+        String query = "INSERT gudang VALUES(?, ?, ?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, g.getId());
+            ps.setString(2, g.getNama());
+            ps.setString(3, g.getAlamat());
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+        return -1;
+    }
 }

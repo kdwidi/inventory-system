@@ -14,31 +14,36 @@ import com.example.model.Transfer;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
  * @author riel
  */
-public interface Inventory extends Remote{
+public interface Inventory extends Remote {
+
     Petugas cekPetugasLogin(String username, String password) throws RemoteException;
-    
+
     Gudang getGudangById(String id) throws RemoteException;
-    
+
     ArrayList<Stok> getStokGudang(String idGudang) throws RemoteException;
-    
-    ArrayList<Stok> searchStokGudang(String idGudang, String search) throws RemoteException;
-    
+
+    ArrayList<Transaksi> getTransaksiGudang(String idGudang) throws RemoteException;
+
+    ArrayList<Transaksi> getTransaksiFilter(String filter) throws RemoteException;
+
+    ArrayList<Barang> getAllBarang() throws RemoteException;
+
+    ArrayList<Transfer> getTransferGudang(String idGudang) throws RemoteException;
+
+    /*
+        Administrator field
+     */
     ArrayList<Gudang> getAllGudang() throws RemoteException;
     
-    ArrayList<Transaksi> getTransaksiGudang(String idGudang) throws RemoteException;
+    int updateGudang(Gudang g) throws RemoteException;
+
+    ArrayList<Petugas> getAllPetugas() throws RemoteException;
     
-    ArrayList<Transaksi> getTransaksiFilter(String filter) throws RemoteException;
-    
-    ArrayList<Barang> getAllBarang() throws RemoteException;
-    
-    ArrayList<Barang> searchBarangName(String search) throws RemoteException;
-    
-    ArrayList<Transfer> getTransferGudang(String idGudang) throws RemoteException;
-    
+    int insertGudang(Gudang g) throws RemoteException;
 }

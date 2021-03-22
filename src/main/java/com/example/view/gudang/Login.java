@@ -7,8 +7,6 @@ package com.example.view.gudang;
 
 import com.example.interfaces.Inventory;
 import com.example.model.Petugas;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

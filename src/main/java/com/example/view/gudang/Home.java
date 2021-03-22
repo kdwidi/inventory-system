@@ -12,7 +12,6 @@ import com.example.model.Petugas;
 import com.example.model.Stok;
 import com.example.model.Transaksi;
 import com.example.model.Transfer;
-import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -32,6 +31,10 @@ public class Home extends javax.swing.JFrame {
     private Inventory remote = null;
     private Petugas petugas = null;
     private Gudang gudang = null;
+    private ArrayList<Stok> listStok = null;
+    private ArrayList<Transaksi> listTx = null;
+    private ArrayList<Transfer> listTf = null;
+    private ArrayList<Barang> listBarang = null;
 
     public Home(Inventory remote, Petugas petugas) throws RemoteException {
         initComponents();
@@ -41,10 +44,14 @@ public class Home extends javax.swing.JFrame {
         gudang = remote.getGudangById(petugas.getGudang());
         namaGudangTxt.setText(gudang.getNama());
         namaPetugasTxt.setText(petugas.getNama());
-        loadAllTable();
+        loadAllTableData();
     }
 
-    private void loadAllTable() throws RemoteException {
+    private void loadAllTableData() throws RemoteException {
+        listStok = remote.getStokGudang(gudang.getId());
+        listTx = remote.getTransaksiGudang(gudang.getId());
+        listTf = remote.getTransferGudang(gudang.getId());
+        listBarang = remote.getAllBarang();
         loadStok();
         loadTransaksi();
         loadTransfer();
@@ -52,7 +59,6 @@ public class Home extends javax.swing.JFrame {
     }
 
     private void loadStok() throws RemoteException {
-        ArrayList<Stok> listStok = remote.getStokGudang(gudang.getId());
         DefaultTableModel model = (DefaultTableModel) tabelStok.getModel();
         model.setRowCount(0);
         if (listStok != null) {
@@ -68,12 +74,10 @@ public class Home extends javax.swing.JFrame {
     }
 
     private void loadTransaksi() throws RemoteException {
-        ArrayList<Transaksi> listTransaksi = remote.getTransaksiGudang(gudang.getId());
-
         DefaultTableModel model = (DefaultTableModel) tabelTransaksi.getModel();
         model.setRowCount(0);
-        if (listTransaksi != null) {
-            listTransaksi.forEach((Transaksi tx) -> {
+        if (listTx != null) {
+            listTx.forEach((Transaksi tx) -> {
                 Object o[] = {
                     tx.getId(),
                     tx.getIdBarang(),
@@ -87,11 +91,10 @@ public class Home extends javax.swing.JFrame {
     }
 
     private void loadTransfer() throws RemoteException {
-        ArrayList<Transfer> listTransfer = remote.getTransferGudang(gudang.getId());
         DefaultTableModel model = (DefaultTableModel) tabelTransfer.getModel();
         model.setRowCount(0);
-        if (listTransfer != null) {
-            listTransfer.forEach((Transfer tf) -> {
+        if (listTf != null) {
+            listTf.forEach((Transfer tf) -> {
                 Object o[] = {
                     tf.getId(),
                     tf.getBarang(),
@@ -107,7 +110,6 @@ public class Home extends javax.swing.JFrame {
     }
 
     private void loadBarang() throws RemoteException {
-        ArrayList<Barang> listBarang = remote.getAllBarang();
         DefaultTableModel model = (DefaultTableModel) tabelBarang.getModel();
         model.setRowCount(0);
         if (listBarang != null) {
@@ -137,7 +139,6 @@ public class Home extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         namaPetugasTxt = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         namaGudangTxt = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
@@ -161,7 +162,7 @@ public class Home extends javax.swing.JFrame {
         tabelBarang = new javax.swing.JTable();
         cariBarangButton = new javax.swing.JButton();
         tambahBarangButton = new javax.swing.JButton();
-        cariBarangTF = new javax.swing.JTextField();
+        cariBarangField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         resetCariBarangButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
@@ -208,9 +209,6 @@ public class Home extends javax.swing.JFrame {
         namaPetugasTxt.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         namaPetugasTxt.setText("petugasTxt");
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        jLabel2.setText("Gudang:");
-
         namaGudangTxt.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         namaGudangTxt.setText("gudangTxt");
 
@@ -255,7 +253,7 @@ public class Home extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1061, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1085, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel4)
@@ -320,9 +318,9 @@ public class Home extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1061, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1085, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(959, Short.MAX_VALUE)
+                .addContainerGap(983, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(filterTransaksiButton, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(tambahTransaksiButton, javax.swing.GroupLayout.Alignment.TRAILING))
@@ -372,7 +370,7 @@ public class Home extends javax.swing.JFrame {
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1061, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1085, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(filterTransferButton)
@@ -422,7 +420,7 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
-        cariBarangTF.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        cariBarangField.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
         jLabel5.setText("Nama barang:");
 
@@ -437,14 +435,14 @@ public class Home extends javax.swing.JFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1061, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1085, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cariBarangTF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cariBarangField, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cariBarangButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -457,7 +455,7 @@ public class Home extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(cariBarangTF, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cariBarangField, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(cariBarangButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(resetCariBarangButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -478,17 +476,15 @@ public class Home extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
                     .addComponent(jSeparator1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(namaGudangTxt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(namaPetugasTxt)))
                 .addContainerGap())
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -496,7 +492,6 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(namaPetugasTxt)
-                    .addComponent(jLabel2)
                     .addComponent(namaGudangTxt))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -537,27 +532,23 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_logoutBtnActionPerformed
 
     private void cariBarangButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariBarangButtonActionPerformed
-        ArrayList<Barang> listBarang;
-        try {
-            listBarang = remote.searchBarangName(cariBarangTF.getText());
+        if (listBarang != null) {
             DefaultTableModel model = (DefaultTableModel) tabelBarang.getModel();
             model.setRowCount(0);
-            if (listBarang != null) {
-                listBarang.forEach((Barang barang) -> {
+            listBarang.forEach((Barang b) -> {
+                if (b.getNama().toLowerCase().contains(cariBarangField.getText().toLowerCase())) {
                     Object o[] = {
-                        barang.getId(),
-                        barang.getNama()
+                        b.getId(),
+                        b.getNama()
                     };
                     model.addRow(o);
-                });
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
         }
     }//GEN-LAST:event_cariBarangButtonActionPerformed
 
     private void resetCariBarangButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetCariBarangButtonActionPerformed
-        cariBarangTF.setText("");
+        cariBarangField.setText("");
         try {
             loadBarang();
         } catch (RemoteException ex) {
@@ -575,23 +566,19 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_resetCariStokButtonActionPerformed
 
     private void cariStokButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariStokButtonActionPerformed
-        ArrayList<Stok> listStok;
-        try {
-            listStok = remote.searchStokGudang(gudang.getId(), cariStokField.getText());
+        if (listStok != null) {
             DefaultTableModel model = (DefaultTableModel) tabelStok.getModel();
             model.setRowCount(0);
-            if (listStok != null) {
-                listStok.forEach((Stok stok) -> {
+            listStok.forEach((Stok s) -> {
+                if (s.getNama().toLowerCase().contains(cariStokField.getText().toLowerCase())) {
                     Object o[] = {
-                        stok.getId(),
-                        stok.getNama(),
-                        stok.getJumlah()
+                        s.getId(),
+                        s.getNama(),
+                        s.getJumlah()
                     };
                     model.addRow(o);
-                });
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
         }
     }//GEN-LAST:event_cariStokButtonActionPerformed
 
@@ -642,7 +629,7 @@ public class Home extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
 
-                Petugas petugas = new Petugas("pb", "Petugas B", "gb");
+                Petugas petugas = new Petugas("pb", "Petugas B", null, null, "gb");
                 Inventory remote = null;
                 Registry registry;
                 try {
@@ -660,13 +647,12 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cariBarangButton;
-    private javax.swing.JTextField cariBarangTF;
+    private javax.swing.JTextField cariBarangField;
     private javax.swing.JButton cariStokButton;
     private javax.swing.JTextField cariStokField;
     private javax.swing.JButton filterTransaksiButton;
     private javax.swing.JButton filterTransferButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
