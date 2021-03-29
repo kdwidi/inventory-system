@@ -35,6 +35,10 @@ public interface Inventory extends Remote {
 
     ArrayList<Transfer> getTransferGudang(String idGudang) throws RemoteException;
 
+    int insertBarang(Barang b) throws RemoteException;
+    
+    int insertTransaksi(Transaksi t) throws RemoteException;
+    
     /*
         Administrator field
      */

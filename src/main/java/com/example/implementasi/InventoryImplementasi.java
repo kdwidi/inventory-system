@@ -198,12 +198,13 @@ public class InventoryImplementasi implements Inventory {
                 Transfer tx = new Transfer(
                         rs.getString("id"),
                         rs.getString("barang"),
-                        rs.getInt("jumlah"),
+                        Math.abs(rs.getInt("jumlah")),
                         rs.getString("tanggal"),
                         rs.getString("petugas"),
                         rs.getString("status"),
                         rs.getString("transaksi_tujuan")
                 );
+                listTransfers.add(tx);
             }
         } catch (SQLException e) {
             System.err.println(e);
@@ -211,6 +212,30 @@ public class InventoryImplementasi implements Inventory {
         return listTransfers;
     }
 
+    @Override
+    public int insertBarang(Barang b) throws RemoteException {
+        String query = "INSERT barang VALUES(?, ?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, b.getId());
+            ps.setString(2, b.getNama());
+            return ps.executeUpdate();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println(e);
+            return 2;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return 3;
+        }
+    }
+
+    @Override
+    public int insertTransaksi(Transaksi t) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
+    
     /*
         Administrator field
      */
