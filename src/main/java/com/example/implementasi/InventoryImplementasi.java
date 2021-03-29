@@ -18,9 +18,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -245,10 +247,13 @@ public class InventoryImplementasi implements Inventory {
             ps.setString(2, g.getAlamat());
             ps.setString(3, g.getId());
             return ps.executeUpdate();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println(e);
+            return 2;
         } catch (SQLException e) {
             System.err.println(e);
+            return 3;
         }
-        return -1;
     }
 
     @Override
@@ -286,9 +291,53 @@ public class InventoryImplementasi implements Inventory {
             ps.setString(2, g.getNama());
             ps.setString(3, g.getAlamat());
             return ps.executeUpdate();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println(e);
+            return 2;
         } catch (SQLException e) {
             System.err.println(e);
+            return 3;
         }
-        return -1;
     }
+
+    @Override
+    public int insertPetugas(Petugas p) throws RemoteException {
+        String query = "INSERT petugas VALUES(?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, p.getId());
+            ps.setString(2, p.getNama());
+            ps.setString(3, p.getPassword());
+            ps.setString(4, p.getStatus());
+            ps.setString(5, p.getGudang());
+            return ps.executeUpdate();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println(e);
+            return 2;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return 3;
+        }
+    }
+
+    @Override
+    public int updatePetugas(Petugas p) throws RemoteException {
+        String query = "UPDATE petugas set nama=?, password=?, status=?, gudang=? where id=?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, p.getNama());
+            ps.setString(2, p.getPassword());
+            ps.setString(3, p.getStatus());
+            ps.setString(4, p.getGudang());
+            ps.setString(5, p.getId());
+            return ps.executeUpdate();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println(e);
+            return 2;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return 3;
+        }
+    }
+
 }

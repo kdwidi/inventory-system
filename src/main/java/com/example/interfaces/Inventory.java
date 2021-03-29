@@ -14,7 +14,6 @@ import com.example.model.Transfer;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  *
@@ -46,4 +45,8 @@ public interface Inventory extends Remote {
     ArrayList<Petugas> getAllPetugas() throws RemoteException;
     
     int insertGudang(Gudang g) throws RemoteException;
+    
+    int insertPetugas(Petugas p) throws RemoteException;
+    
+    int updatePetugas(Petugas p) throws RemoteException;
 }
